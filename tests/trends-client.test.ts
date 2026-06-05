@@ -77,6 +77,14 @@ describe("explore()", () => {
     );
   });
 
+  it("explains invalid geo or timeframe on 400", async () => {
+    mockFetch("", 400);
+
+    await expect(explore(["coffee"], "USA", "today 12-m")).rejects.toThrow(
+      /invalid geo or timeframe/
+    );
+  });
+
   it("sends the correct URL parameters", async () => {
     mockFetch(loadFixture("explore.json"));
 

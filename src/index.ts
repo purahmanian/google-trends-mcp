@@ -248,13 +248,33 @@ function toolText(text: string) {
   };
 }
 
+/**
+ * Parse tool arguments with zod, converting validation failures into a
+ * readable one-line message instead of throwing (which would surface as a
+ * raw JSON-RPC internal error to the client).
+ */
+function parseArgs<S extends z.ZodTypeAny>(
+  schema: S,
+  rawArgs: unknown
+): { ok: true; data: z.output<S> } | { ok: false; message: string } {
+  const result = schema.safeParse(rawArgs);
+  if (result.success) {
+    return { ok: true, data: result.data };
+  }
+  const details = result.error.issues
+    .map((i) => (i.path.length ? `${i.path.join(".")}: ${i.message}` : i.message))
+    .join("; ");
+  return { ok: false, message: `Invalid input. ${details}` };
+}
+
 // ---------------------------------------------------------------------------
 // Tool handlers
 // ---------------------------------------------------------------------------
 
 async function handleInterestOverTime(rawArgs: unknown) {
-  const args = InterestOverTimeSchema.parse(rawArgs);
-  const { terms, geo, timeframe } = args;
+  const parsed = parseArgs(InterestOverTimeSchema, rawArgs);
+  if (!parsed.ok) return toolError(parsed.message);
+  const { terms, geo, timeframe } = parsed.data;
 
   try {
     const exploreData = await explore(terms, geo, timeframe);
@@ -299,8 +319,9 @@ async function handleInterestOverTime(rawArgs: unknown) {
 }
 
 async function handleCompareTerms(rawArgs: unknown) {
-  const args = CompareTermsSchema.parse(rawArgs);
-  const { terms, geo, timeframe } = args;
+  const parsed = parseArgs(CompareTermsSchema, rawArgs);
+  if (!parsed.ok) return toolError(parsed.message);
+  const { terms, geo, timeframe } = parsed.data;
 
   try {
     const exploreData = await explore(terms, geo, timeframe);
@@ -354,8 +375,9 @@ async function handleCompareTerms(rawArgs: unknown) {
 }
 
 async function handleRelatedQueries(rawArgs: unknown) {
-  const args = RelatedQueriesSchema.parse(rawArgs);
-  const { term, geo, timeframe } = args;
+  const parsed = parseArgs(RelatedQueriesSchema, rawArgs);
+  if (!parsed.ok) return toolError(parsed.message);
+  const { term, geo, timeframe } = parsed.data;
 
   try {
     const exploreData = await explore([term], geo, timeframe);
@@ -400,8 +422,9 @@ async function handleRelatedQueries(rawArgs: unknown) {
 }
 
 async function handleTrendingNow(rawArgs: unknown) {
-  const args = TrendingNowSchema.parse(rawArgs);
-  const { geo } = args;
+  const parsed = parseArgs(TrendingNowSchema, rawArgs);
+  if (!parsed.ok) return toolError(parsed.message);
+  const { geo } = parsed.data;
 
   try {
     const data = await dailyTrends(geo);
@@ -413,7 +436,7 @@ async function handleTrendingNow(rawArgs: unknown) {
 
     const today = days[0];
     const lines: string[] = [
-      `Trending searches in ${geo} for ${today?.date ?? "today"}`,
+      `Trending searches in ${geo.toUpperCase()} for ${today?.date ?? "today"}`,
       "",
     ];
 
@@ -435,8 +458,9 @@ async function handleTrendingNow(rawArgs: unknown) {
 }
 
 async function handleInterestByRegion(rawArgs: unknown) {
-  const args = InterestByRegionSchema.parse(rawArgs);
-  const { term, geo, timeframe } = args;
+  const parsed = parseArgs(InterestByRegionSchema, rawArgs);
+  if (!parsed.ok) return toolError(parsed.message);
+  const { term, geo, timeframe } = parsed.data;
 
   try {
     const exploreData = await explore([term], geo, timeframe);

@@ -86,6 +86,14 @@ async function fetchTrends(url: string, label: string): Promise<string> {
         "Wait a few minutes and try again. This is a known limitation of the unofficial endpoint."
     );
   }
+  if (res.status === 400) {
+    throw new Error(
+      `Google Trends rejected the ${label} request (HTTP 400). ` +
+        "This usually means an invalid geo or timeframe. Use a two-letter ISO " +
+        'country code (e.g. "US") or an empty string for worldwide, and a ' +
+        'timeframe like "today 12-m", "now 7-d", or "2024-01-01 2024-12-31".'
+    );
+  }
   if (!res.ok) {
     throw new Error(
       `Google Trends ${label} request failed with status ${res.status}. ` +
@@ -313,7 +321,7 @@ export async function dailyTrends(
   const hl = opts.hl ?? "en-US";
 
   const url = new URL("https://trends.google.com/trending/rss");
-  url.searchParams.set("geo", geo);
+  url.searchParams.set("geo", geo.toUpperCase());
   url.searchParams.set("hl", hl);
 
   const res = await fetch(url.toString(), { headers: baseHeaders() });
@@ -322,6 +330,12 @@ export async function dailyTrends(
     throw new Error(
       "Google Trends rate-limited this request (HTTP 429). " +
         "Wait a few minutes and try again."
+    );
+  }
+  if (res.status === 400 || res.status === 404) {
+    throw new Error(
+      `Google Trends does not recognize the geo code "${geo}". ` +
+        'Use a two-letter ISO country code such as "US", "GB", or "DE".'
     );
   }
   if (!res.ok) {
