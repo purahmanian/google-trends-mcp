@@ -170,14 +170,13 @@ describe("comparedGeo()", () => {
 // ---------------------------------------------------------------------------
 
 describe("dailyTrends()", () => {
-  it("strips prefix and returns trending searches", async () => {
-    mockFetch(loadFixture("dailytrends.json"));
+  it("parses the trending RSS feed into trending searches", async () => {
+    mockFetch(loadFixture("trending-rss.xml"));
 
     const result = await dailyTrends("US");
     const days = result.default.trendingSearchesDays;
 
     expect(days).toHaveLength(1);
-    expect(days[0]?.date).toBe("20240525");
 
     const searches = days[0]?.trendingSearches ?? [];
     expect(searches).toHaveLength(3);
@@ -186,20 +185,86 @@ describe("dailyTrends()", () => {
     expect(searches[0]?.articles[0]?.source).toBe("CNN");
   });
 
+  it("decodes XML entities in queries", async () => {
+    mockFetch(loadFixture("trending-rss.xml"));
+
+    const result = await dailyTrends("US");
+    const searches = result.default.trendingSearchesDays[0]?.trendingSearches ?? [];
+    expect(searches[1]?.title.query).toBe("jigsaw puzzle & games");
+  });
+
+  it("handles items without news articles", async () => {
+    mockFetch(loadFixture("trending-rss.xml"));
+
+    const result = await dailyTrends("US");
+    const searches = result.default.trendingSearchesDays[0]?.trendingSearches ?? [];
+    expect(searches[2]?.title.query).toBe("weather radar");
+    expect(searches[2]?.articles).toHaveLength(0);
+  });
+
   it("throws on 429", async () => {
     mockFetch("", 429);
     await expect(dailyTrends("US")).rejects.toThrow(/rate-limited/);
   });
 
-  it("sends geo and hl parameters", async () => {
-    mockFetch(loadFixture("dailytrends.json"));
+  it("sends geo and hl parameters to the RSS endpoint", async () => {
+    mockFetch(loadFixture("trending-rss.xml"));
 
     await dailyTrends("GB", { hl: "en-GB" });
 
     const fetchCall = vi.mocked(fetch).mock.calls[0];
     const url = String(fetchCall?.[0]);
+    expect(url).toContain("/trending/rss");
     expect(url).toContain("geo=GB");
     expect(url).toContain("hl=en-GB");
+  });
+});
+
+// ---------------------------------------------------------------------------
+// Cookie bootstrap on 429
+// ---------------------------------------------------------------------------
+
+describe("cookie bootstrap", () => {
+  it("retries once with the cookie from a 429 response", async () => {
+    const cookieResponse = {
+      ok: false,
+      status: 429,
+      headers: { get: (name: string) => (name === "set-cookie" ? "NID=abc123; path=/" : null) },
+      text: async () => "",
+    } as unknown as Response;
+
+    const okResponse = {
+      ok: true,
+      status: 200,
+      text: async () => loadFixture("explore.json"),
+    } as unknown as Response;
+
+    const fetchMock = vi
+      .fn()
+      .mockResolvedValueOnce(cookieResponse)
+      .mockResolvedValueOnce(okResponse);
+    vi.stubGlobal("fetch", fetchMock);
+
+    const result = await explore(["coffee"], "US", "today 12-m");
+    expect(result.widgets).toHaveLength(3);
+    expect(fetchMock).toHaveBeenCalledTimes(2);
+
+    const secondCallHeaders = fetchMock.mock.calls[1]?.[1]?.headers as Record<string, string>;
+    expect(secondCallHeaders["Cookie"]).toBe("NID=abc123");
+  });
+
+  it("throws rate-limited when 429 persists after the cookie retry", async () => {
+    const cookieResponse = {
+      ok: false,
+      status: 429,
+      headers: { get: (name: string) => (name === "set-cookie" ? "NID=abc123; path=/" : null) },
+      text: async () => "",
+    } as unknown as Response;
+
+    const fetchMock = vi.fn().mockResolvedValue(cookieResponse);
+    vi.stubGlobal("fetch", fetchMock);
+
+    await expect(explore(["coffee"], "US", "today 12-m")).rejects.toThrow(/rate-limited/);
   });
 });
 

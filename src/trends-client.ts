@@ -11,9 +11,13 @@
 
 const BASE = "https://trends.google.com/trends/api";
 
-/** Strip the ")]}'" prefix Google prepends to every JSON response. */
+/**
+ * Strip the anti-JSON-hijacking prefix Google prepends to every JSON
+ * response. The explore endpoint uses ")]}'" and the widgetdata endpoints
+ * use ")]}'," (with a trailing comma), so both forms are handled.
+ */
 function stripPrefix(raw: string): string {
-  return raw.replace(/^\)\]\}'\n?/, "");
+  return raw.replace(/^\)\]\}',?\n?/, "");
 }
 
 export interface TrendsRequestOptions {
@@ -28,13 +32,68 @@ export interface TrendsRequestOptions {
  * A realistic User-Agent reduces the chance of immediate blocking.
  */
 function baseHeaders(): Record<string, string> {
-  return {
+  const headers: Record<string, string> = {
     "User-Agent":
       "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36",
     Accept: "application/json, text/plain, */*",
     "Accept-Language": "en-US,en;q=0.9",
     Referer: "https://trends.google.com/",
   };
+  if (sessionCookie) {
+    headers["Cookie"] = sessionCookie;
+  }
+  return headers;
+}
+
+/**
+ * Session cookie (NID) for the Trends API.
+ *
+ * Google returns HTTP 429 for cookie-less requests to the API endpoints,
+ * but that 429 response carries a Set-Cookie header. Capturing that cookie
+ * and retrying once makes the request succeed. The cookie is cached for the
+ * lifetime of the process.
+ */
+let sessionCookie: string | null = null;
+
+/** Extract the first cookie pair from a Set-Cookie header value. */
+function firstCookiePair(setCookie: string): string {
+  return setCookie.split(";")[0] ?? setCookie;
+}
+
+/**
+ * Fetch a Trends API URL, transparently bootstrapping the session cookie.
+ * On a 429 that provides a Set-Cookie header, the cookie is stored and the
+ * request retried once. A 429 without a cookie (or after retry) is a real
+ * rate limit.
+ */
+async function fetchTrends(url: string, label: string): Promise<string> {
+  let res = await fetch(url, { headers: baseHeaders() });
+
+  if (res.status === 429) {
+    const setCookie =
+      typeof res.headers?.get === "function"
+        ? res.headers.get("set-cookie")
+        : null;
+    if (setCookie) {
+      sessionCookie = firstCookiePair(setCookie);
+      res = await fetch(url, { headers: baseHeaders() });
+    }
+  }
+
+  if (res.status === 429) {
+    throw new Error(
+      "Google Trends rate-limited this request (HTTP 429). " +
+        "Wait a few minutes and try again. This is a known limitation of the unofficial endpoint."
+    );
+  }
+  if (!res.ok) {
+    throw new Error(
+      `Google Trends ${label} request failed with status ${res.status}. ` +
+        "The unofficial endpoint may be temporarily unavailable."
+    );
+  }
+
+  return res.text();
 }
 
 /** Build a comparisonItem object for the explore endpoint. */
@@ -54,10 +113,22 @@ export type WidgetType =
 
 export interface ExploreWidget {
   token: string;
-  type: WidgetType;
-  title: string;
+  /**
+   * Live responses identify widgets by `id` (e.g. "TIMESERIES"); older
+   * responses also carried a `type` field. Use findWidget() to match either.
+   */
+  type?: WidgetType;
+  title?: string;
   id: string;
   request: Record<string, unknown>;
+}
+
+/** Find a widget by kind, matching either the `id` or legacy `type` field. */
+export function findWidget(
+  widgets: ExploreWidget[],
+  kind: WidgetType
+): ExploreWidget | undefined {
+  return widgets.find((w) => w.id === kind || w.type === kind);
 }
 
 export interface ExploreResponse {
@@ -86,22 +157,7 @@ export async function explore(
   url.searchParams.set("tz", String(tz));
   url.searchParams.set("req", req);
 
-  const res = await fetch(url.toString(), { headers: baseHeaders() });
-
-  if (res.status === 429) {
-    throw new Error(
-      "Google Trends rate-limited this request (HTTP 429). " +
-        "Wait a few minutes and try again. This is a known limitation of the unofficial endpoint."
-    );
-  }
-  if (!res.ok) {
-    throw new Error(
-      `Google Trends explore request failed with status ${res.status}. ` +
-        "The unofficial endpoint may be temporarily unavailable."
-    );
-  }
-
-  const raw = await res.text();
+  const raw = await fetchTrends(url.toString(), "explore");
   const data = JSON.parse(stripPrefix(raw)) as ExploreResponse;
   return data;
 }
@@ -138,21 +194,7 @@ export async function multiline(
   url.searchParams.set("token", token);
   url.searchParams.set("req", JSON.stringify(request));
 
-  const res = await fetch(url.toString(), { headers: baseHeaders() });
-
-  if (res.status === 429) {
-    throw new Error(
-      "Google Trends rate-limited this request (HTTP 429). " +
-        "Wait a few minutes and try again."
-    );
-  }
-  if (!res.ok) {
-    throw new Error(
-      `Google Trends multiline request failed with status ${res.status}.`
-    );
-  }
-
-  const raw = await res.text();
+  const raw = await fetchTrends(url.toString(), "multiline");
   return JSON.parse(stripPrefix(raw)) as MultilineResponse;
 }
 
@@ -184,21 +226,7 @@ export async function relatedSearches(
   url.searchParams.set("token", token);
   url.searchParams.set("req", JSON.stringify(request));
 
-  const res = await fetch(url.toString(), { headers: baseHeaders() });
-
-  if (res.status === 429) {
-    throw new Error(
-      "Google Trends rate-limited this request (HTTP 429). " +
-        "Wait a few minutes and try again."
-    );
-  }
-  if (!res.ok) {
-    throw new Error(
-      `Google Trends relatedsearches request failed with status ${res.status}.`
-    );
-  }
-
-  const raw = await res.text();
+  const raw = await fetchTrends(url.toString(), "relatedsearches");
   return JSON.parse(stripPrefix(raw)) as RelatedQueriesResponse;
 }
 
@@ -232,21 +260,7 @@ export async function comparedGeo(
   url.searchParams.set("token", token);
   url.searchParams.set("req", JSON.stringify(request));
 
-  const res = await fetch(url.toString(), { headers: baseHeaders() });
-
-  if (res.status === 429) {
-    throw new Error(
-      "Google Trends rate-limited this request (HTTP 429). " +
-        "Wait a few minutes and try again."
-    );
-  }
-  if (!res.ok) {
-    throw new Error(
-      `Google Trends comparedgeo request failed with status ${res.status}.`
-    );
-  }
-
-  const raw = await res.text();
+  const raw = await fetchTrends(url.toString(), "comparedgeo");
   return JSON.parse(stripPrefix(raw)) as ComparedGeoResponse;
 }
 
@@ -265,19 +279,42 @@ export interface DailyTrendsResponse {
   };
 }
 
-/** Fetch today's trending searches for a given geo. */
+/** Decode the handful of XML entities that appear in the Trends RSS feed. */
+function decodeXmlEntities(s: string): string {
+  return s
+    .replace(/&lt;/g, "<")
+    .replace(/&gt;/g, ">")
+    .replace(/&quot;/g, '"')
+    .replace(/&#39;/g, "'")
+    .replace(/&apos;/g, "'")
+    .replace(/&amp;/g, "&");
+}
+
+/** Pull the text content of the first occurrence of an XML tag. */
+function tagText(block: string, tag: string): string {
+  const m = block.match(
+    new RegExp(`<${tag}[^>]*>([\\s\\S]*?)</${tag}>`)
+  );
+  return m?.[1] ? decodeXmlEntities(m[1].trim()) : "";
+}
+
+/**
+ * Fetch today's trending searches for a given geo.
+ *
+ * Note: the old /trends/api/dailytrends JSON endpoint was removed by Google
+ * (it now returns 404). This uses the RSS feed that backs the current
+ * trends.google.com/trending page instead, and adapts it to the same
+ * response shape.
+ */
 export async function dailyTrends(
   geo: string,
   opts: TrendsRequestOptions = {}
 ): Promise<DailyTrendsResponse> {
   const hl = opts.hl ?? "en-US";
-  const tz = opts.tz ?? 360;
 
-  const url = new URL(`${BASE}/dailytrends`);
-  url.searchParams.set("hl", hl);
-  url.searchParams.set("tz", String(tz));
+  const url = new URL("https://trends.google.com/trending/rss");
   url.searchParams.set("geo", geo);
-  url.searchParams.set("ns", "15");
+  url.searchParams.set("hl", hl);
 
   const res = await fetch(url.toString(), { headers: baseHeaders() });
 
@@ -289,10 +326,34 @@ export async function dailyTrends(
   }
   if (!res.ok) {
     throw new Error(
-      `Google Trends dailytrends request failed with status ${res.status}.`
+      `Google Trends trending RSS request failed with status ${res.status}.`
     );
   }
 
-  const raw = await res.text();
-  return JSON.parse(stripPrefix(raw)) as DailyTrendsResponse;
+  const xml = await res.text();
+
+  const items = xml.match(/<item>[\s\S]*?<\/item>/g) ?? [];
+  const trendingSearches: DailyTrend[] = items.map((item) => {
+    const query = tagText(item, "title");
+    const traffic = tagText(item, "ht:approx_traffic");
+    const newsBlocks = item.match(/<ht:news_item>[\s\S]*?<\/ht:news_item>/g) ?? [];
+    const articles = newsBlocks.map((nb) => ({
+      title: tagText(nb, "ht:news_item_title"),
+      url: tagText(nb, "ht:news_item_url"),
+      source: tagText(nb, "ht:news_item_source"),
+    }));
+    return {
+      title: { query, exploreLink: "" },
+      formattedTraffic: traffic,
+      articles,
+    };
+  });
+
+  const date = new Date().toISOString().slice(0, 10).replace(/-/g, "");
+
+  return {
+    default: {
+      trendingSearchesDays: [{ date, trendingSearches }],
+    },
+  };
 }

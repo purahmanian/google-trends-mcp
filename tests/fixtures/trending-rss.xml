@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<rss xmlns:atom="http://www.w3.org/2005/Atom" xmlns:ht="https://trends.google.com/trending/rss" version="2.0">
+	<channel>
+		<title>Daily Search Trends</title>
+		<description>Recent searches</description>
+		<link>https://trends.google.com/trending/rss?geo=US</link>
+		<item>
+			<title>Memorial Day</title>
+			<ht:approx_traffic>5M+</ht:approx_traffic>
+			<description/>
+			<link>https://trends.google.com/trending/rss?geo=US</link>
+			<pubDate>Sat, 25 May 2024 08:00:00 -0700</pubDate>
+			<ht:news_item>
+				<ht:news_item_title>What is open and closed on Memorial Day</ht:news_item_title>
+				<ht:news_item_snippet/>
+				<ht:news_item_url>https://www.cnn.com/memorial-day-open-closed</ht:news_item_url>
+				<ht:news_item_source>CNN</ht:news_item_source>
+			</ht:news_item>
+		</item>
+		<item>
+			<title>jigsaw puzzle &amp; games</title>
+			<ht:approx_traffic>200K+</ht:approx_traffic>
+			<description/>
+			<link>https://trends.google.com/trending/rss?geo=US</link>
+			<pubDate>Sat, 25 May 2024 09:00:00 -0700</pubDate>
+			<ht:news_item>
+				<ht:news_item_title>Puzzle sales surge</ht:news_item_title>
+				<ht:news_item_snippet/>
+				<ht:news_item_url>https://example.com/puzzles</ht:news_item_url>
+				<ht:news_item_source>Example News</ht:news_item_source>
+			</ht:news_item>
+		</item>
+		<item>
+			<title>weather radar</title>
+			<ht:approx_traffic>100K+</ht:approx_traffic>
+			<description/>
+			<link>https://trends.google.com/trending/rss?geo=US</link>
+			<pubDate>Sat, 25 May 2024 10:00:00 -0700</pubDate>
+		</item>
+	</channel>
+</rss>

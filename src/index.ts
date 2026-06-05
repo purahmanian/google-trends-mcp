@@ -23,6 +23,7 @@ import { z } from "zod";
 
 import {
   explore,
+  findWidget,
   multiline,
   relatedSearches,
   comparedGeo,
@@ -257,7 +258,7 @@ async function handleInterestOverTime(rawArgs: unknown) {
 
   try {
     const exploreData = await explore(terms, geo, timeframe);
-    const widget = exploreData.widgets.find((w) => w.type === "TIMESERIES");
+    const widget = findWidget(exploreData.widgets, "TIMESERIES");
     if (!widget) {
       return toolError("No TIMESERIES widget found in Trends explore response.");
     }
@@ -303,7 +304,7 @@ async function handleCompareTerms(rawArgs: unknown) {
 
   try {
     const exploreData = await explore(terms, geo, timeframe);
-    const widget = exploreData.widgets.find((w) => w.type === "TIMESERIES");
+    const widget = findWidget(exploreData.widgets, "TIMESERIES");
     if (!widget) {
       return toolError("No TIMESERIES widget found in Trends explore response.");
     }
@@ -358,7 +359,7 @@ async function handleRelatedQueries(rawArgs: unknown) {
 
   try {
     const exploreData = await explore([term], geo, timeframe);
-    const widget = exploreData.widgets.find((w) => w.type === "RELATED_QUERIES");
+    const widget = findWidget(exploreData.widgets, "RELATED_QUERIES");
     if (!widget) {
       return toolError("No RELATED_QUERIES widget found in Trends explore response.");
     }
@@ -439,7 +440,7 @@ async function handleInterestByRegion(rawArgs: unknown) {
 
   try {
     const exploreData = await explore([term], geo, timeframe);
-    const widget = exploreData.widgets.find((w) => w.type === "GEO_MAP");
+    const widget = findWidget(exploreData.widgets, "GEO_MAP");
     if (!widget) {
       return toolError("No GEO_MAP widget found in Trends explore response.");
     }
