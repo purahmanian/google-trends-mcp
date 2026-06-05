@@ -121,7 +121,13 @@ descriptive error message. Waiting 2-5 minutes usually resolves it.
 
 Built by **Puya Ventures LLC**. I build custom MCP servers and AI integrations for
 product teams and researchers. Get in touch:
-[purahmanian@gmail.com](mailto:purahmanian@gmail.com)
+[purahmanian@gmail.com](mailto:purahmanian@gmail.com) |
+Portfolio: [puyarahmanian.com](https://puyarahmanian.com)
+
+Part of the **Product-Research MCP Suite**:
+[keepa-mcp](https://github.com/purahmanian/keepa-mcp) ·
+[google-trends-mcp](https://github.com/purahmanian/google-trends-mcp) ·
+[junglescout-mcp](https://github.com/purahmanian/junglescout-mcp)
 
 ---
 
