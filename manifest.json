@@ -1,0 +1,73 @@
+{
+  "manifest_version": "0.3",
+  "version": "0.1.1",
+  "author": {
+    "name": "Puya Rahmanian",
+    "email": "purahmanian@gmail.com",
+    "url": "https://puyarahmanian.com"
+  },
+  "license": "MIT",
+  "compatibility": {
+    "platforms": [
+      "darwin",
+      "win32",
+      "linux"
+    ],
+    "runtimes": {
+      "node": ">=18.0.0"
+    }
+  },
+  "name": "google-trends-mcp",
+  "display_name": "Google Trends",
+  "description": "Google Trends demand signals: interest over time, comparisons, related and trending queries",
+  "long_description": "Gives Claude live access to Google Trends with no API key: interest over time, head-to-head term comparisons, rising and top related queries, daily trending searches, and regional interest breakdowns. Uses the unofficial endpoints the Trends website itself calls.",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/purahmanian/google-trends-mcp.git"
+  },
+  "homepage": "https://github.com/purahmanian/google-trends-mcp",
+  "support": "https://github.com/purahmanian/google-trends-mcp/issues",
+  "server": {
+    "type": "node",
+    "entry_point": "dist/index.js",
+    "mcp_config": {
+      "command": "node",
+      "args": [
+        "${__dirname}/dist/index.js"
+      ],
+      "env": {}
+    }
+  },
+  "tools": [
+    {
+      "name": "interest_over_time",
+      "description": "Interest scores for up to 5 terms over a time range"
+    },
+    {
+      "name": "compare_terms",
+      "description": "Normalized comparison of 2-5 terms with winner analysis"
+    },
+    {
+      "name": "related_queries",
+      "description": "Rising and top related queries for a term"
+    },
+    {
+      "name": "trending_now",
+      "description": "Today's trending searches for a country"
+    },
+    {
+      "name": "interest_by_region",
+      "description": "Regional interest breakdown for a term"
+    }
+  ],
+  "keywords": [
+    "google trends",
+    "demand",
+    "keyword research",
+    "seo",
+    "mcp"
+  ],
+  "privacy_policies": [
+    "https://policies.google.com/privacy"
+  ]
+}

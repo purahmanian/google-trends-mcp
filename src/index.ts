@@ -95,6 +95,11 @@ const InterestByRegionSchema = z.object({
 const TOOLS = [
   {
     name: "interest_over_time",
+    annotations: {
+      title: "Interest over time",
+      readOnlyHint: true,
+      openWorldHint: true,
+    },
     description:
       "Fetch Google Trends interest scores (0-100) for up to 5 search terms over a " +
       "time range. Returns a time series with one value per term per data point. " +
@@ -127,6 +132,11 @@ const TOOLS = [
   },
   {
     name: "compare_terms",
+    annotations: {
+      title: "Compare search terms",
+      readOnlyHint: true,
+      openWorldHint: true,
+    },
     description:
       "Compare 2-5 search terms against each other using Google Trends normalized " +
       "interest scores. Returns the time series, averages per term, and identifies " +
@@ -157,6 +167,11 @@ const TOOLS = [
   },
   {
     name: "related_queries",
+    annotations: {
+      title: "Related queries",
+      readOnlyHint: true,
+      openWorldHint: true,
+    },
     description:
       "Get rising and top related search queries for a given term from Google Trends. " +
       "Rising queries have seen the largest recent growth; top queries have the most " +
@@ -184,6 +199,11 @@ const TOOLS = [
   },
   {
     name: "trending_now",
+    annotations: {
+      title: "Trending searches now",
+      readOnlyHint: true,
+      openWorldHint: true,
+    },
     description:
       "Get today's daily trending searches for a country from Google Trends. " +
       "Returns the top trending queries with estimated traffic and linked news articles.",
@@ -202,6 +222,11 @@ const TOOLS = [
   },
   {
     name: "interest_by_region",
+    annotations: {
+      title: "Interest by region",
+      readOnlyHint: true,
+      openWorldHint: true,
+    },
     description:
       "Get Google Trends interest scores broken down by region (sub-country or " +
       "country, depending on the geo parameter). Returns top regions with the " +
@@ -504,7 +529,7 @@ async function handleInterestByRegion(rawArgs: unknown) {
 const server = new Server(
   {
     name: "google-trends-mcp",
-    version: "0.1.0",
+    version: "0.1.1",
   },
   {
     capabilities: {
@@ -518,6 +543,7 @@ server.setRequestHandler(ListToolsRequestSchema, async () => ({
     name: t.name,
     description: t.description,
     inputSchema: t.inputSchema,
+    annotations: t.annotations,
   })),
 }));
 

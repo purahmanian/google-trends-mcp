@@ -1,6 +1,6 @@
 {
   "name": "google-trends-mcp",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "MCP server for Google Trends: interest over time, comparisons, related queries, trending searches, and regional interest",
   "type": "module",
   "mcpName": "io.github.purahmanian/google-trends-mcp",

@@ -131,6 +131,14 @@ Part of the **Product-Research MCP Suite**:
 
 ---
 
+## Privacy
+
+This server runs entirely on your machine. It collects no telemetry and stores
+no data. The only network calls it makes are to Google Trends endpoints
+(trends.google.com), sending the search terms and region codes you ask about.
+No account or API key is involved. See Google's privacy policy:
+https://policies.google.com/privacy
+
 ## License
 
 MIT. See [LICENSE](./LICENSE).
