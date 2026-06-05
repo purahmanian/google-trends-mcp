@@ -119,10 +119,9 @@ descriptive error message. Waiting 2-5 minutes usually resolves it.
 
 ## Built by
 
-I build custom MCP servers and AI integrations for product teams and researchers.
-Get in touch: [purahmanian@gmail.com](mailto:purahmanian@gmail.com)
-
-<!-- Portfolio: https://your-portfolio-url-here -->
+Built by **Puya Ventures LLC**. I build custom MCP servers and AI integrations for
+product teams and researchers. Get in touch:
+[purahmanian@gmail.com](mailto:purahmanian@gmail.com)
 
 ---
 

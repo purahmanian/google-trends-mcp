@@ -1,0 +1,20 @@
+{
+  "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
+  "name": "io.github.purahmanian/google-trends-mcp",
+  "description": "MCP server for Google Trends: interest over time, comparisons, related queries, trending searches, and regional interest",
+  "repository": {
+    "url": "https://github.com/purahmanian/google-trends-mcp",
+    "source": "github"
+  },
+  "version": "0.1.0",
+  "packages": [
+    {
+      "registryType": "npm",
+      "identifier": "google-trends-mcp",
+      "version": "0.1.0",
+      "transport": {
+        "type": "stdio"
+      }
+    }
+  ]
+}

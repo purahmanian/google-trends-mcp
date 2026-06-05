@@ -3,10 +3,16 @@
   "version": "0.1.0",
   "description": "MCP server for Google Trends: interest over time, comparisons, related queries, trending searches, and regional interest",
   "type": "module",
+  "mcpName": "io.github.purahmanian/google-trends-mcp",
   "main": "dist/index.js",
   "bin": {
     "google-trends-mcp": "dist/index.js"
   },
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE"
+  ],
   "scripts": {
     "start": "node dist/index.js",
     "dev": "tsx watch src/index.ts",
@@ -20,14 +26,25 @@
   },
   "keywords": [
     "mcp",
+    "model-context-protocol",
     "google-trends",
     "trends",
     "keyword-research",
     "product-research",
-    "seo"
+    "seo",
+    "ecommerce",
+    "claude"
   ],
   "author": "Puya Rahmanian <purahmanian@gmail.com>",
   "license": "MIT",
+  "homepage": "https://github.com/purahmanian/google-trends-mcp#readme",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/purahmanian/google-trends-mcp.git"
+  },
+  "bugs": {
+    "url": "https://github.com/purahmanian/google-trends-mcp/issues"
+  },
   "dependencies": {
     "@modelcontextprotocol/sdk": "^1.12.0",
     "zod": "^3.23.8"
