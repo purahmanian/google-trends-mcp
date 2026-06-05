@@ -1,0 +1,32 @@
+name: Release
+
+# Publishes to npm via OIDC trusted publishing on version tags.
+# No tokens or secrets: npmjs.com is configured to trust this exact
+# repository + workflow filename. Provenance is generated automatically.
+
+on:
+  push:
+    tags: ['v*']
+
+permissions:
+  id-token: write
+  contents: read
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+          registry-url: 'https://registry.npmjs.org'
+
+      - run: npm ci
+
+      - run: npm run build
+
+      - run: npm test
+
+      - run: npm publish
