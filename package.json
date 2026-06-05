@@ -1,0 +1,41 @@
+{
+  "name": "google-trends-mcp",
+  "version": "0.1.0",
+  "description": "MCP server for Google Trends: interest over time, comparisons, related queries, trending searches, and regional interest",
+  "type": "module",
+  "main": "dist/index.js",
+  "bin": {
+    "google-trends-mcp": "dist/index.js"
+  },
+  "scripts": {
+    "start": "node dist/index.js",
+    "dev": "tsx watch src/index.ts",
+    "build": "tsc",
+    "clean": "rm -rf dist",
+    "test": "vitest run",
+    "test:watch": "vitest"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "keywords": [
+    "mcp",
+    "google-trends",
+    "trends",
+    "keyword-research",
+    "product-research",
+    "seo"
+  ],
+  "author": "Puya Rahmanian <purahmanian@gmail.com>",
+  "license": "MIT",
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.12.0",
+    "zod": "^3.23.8"
+  },
+  "devDependencies": {
+    "@types/node": "^22.10.0",
+    "tsx": "^4.19.2",
+    "typescript": "^5.7.2",
+    "vitest": "^2.1.8"
+  }
+}

@@ -1,0 +1,40 @@
+)]}'
+{
+  "default": {
+    "timelineData": [
+      {
+        "time": "1685318400",
+        "formattedTime": "May 29, 2023",
+        "formattedAxisTime": "May 29",
+        "value": [72],
+        "hasData": [true],
+        "formattedValue": ["72"]
+      },
+      {
+        "time": "1685923200",
+        "formattedTime": "Jun 5, 2023",
+        "formattedAxisTime": "Jun 5",
+        "value": [68],
+        "hasData": [true],
+        "formattedValue": ["68"]
+      },
+      {
+        "time": "1686528000",
+        "formattedTime": "Jun 12, 2023",
+        "formattedAxisTime": "Jun 12",
+        "value": [75],
+        "hasData": [true],
+        "formattedValue": ["75"]
+      },
+      {
+        "time": "1687132800",
+        "formattedTime": "Jun 19, 2023",
+        "formattedAxisTime": "Jun 19",
+        "value": [65],
+        "hasData": [true],
+        "formattedValue": ["65"]
+      }
+    ],
+    "averages": [70]
+  }
+}

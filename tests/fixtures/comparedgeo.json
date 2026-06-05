@@ -1,0 +1,47 @@
+)]}'
+{
+  "default": {
+    "geoMapData": [
+      {
+        "geoCode": "US-WA",
+        "geoName": "Washington",
+        "value": [100],
+        "formattedValue": ["100"],
+        "maxValueIndex": 0,
+        "hasData": [true]
+      },
+      {
+        "geoCode": "US-OR",
+        "geoName": "Oregon",
+        "value": [94],
+        "formattedValue": ["94"],
+        "maxValueIndex": 0,
+        "hasData": [true]
+      },
+      {
+        "geoCode": "US-CA",
+        "geoName": "California",
+        "value": [89],
+        "formattedValue": ["89"],
+        "maxValueIndex": 0,
+        "hasData": [true]
+      },
+      {
+        "geoCode": "US-VT",
+        "geoName": "Vermont",
+        "value": [82],
+        "formattedValue": ["82"],
+        "maxValueIndex": 0,
+        "hasData": [true]
+      },
+      {
+        "geoCode": "US-CO",
+        "geoName": "Colorado",
+        "value": [78],
+        "formattedValue": ["78"],
+        "maxValueIndex": 0,
+        "hasData": [true]
+      }
+    ]
+  }
+}

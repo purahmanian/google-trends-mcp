@@ -1,0 +1,54 @@
+)]}'
+{
+  "widgets": [
+    {
+      "token": "APP6_TIMESERIES_TOKEN",
+      "type": "TIMESERIES",
+      "title": "Interest over time",
+      "id": "TIMESERIES",
+      "request": {
+        "time": "today 12-m",
+        "resolution": "WEEK",
+        "locale": "en-US",
+        "comparisonItem": [
+          { "geo": { "country": "US" }, "complexKeywordsRestriction": { "keyword": [{ "type": "BROAD", "value": "coffee" }] } }
+        ],
+        "requestOptions": { "property": "", "backend": "IZG", "category": 0 }
+      }
+    },
+    {
+      "token": "APP6_RELATED_QUERIES_TOKEN",
+      "type": "RELATED_QUERIES",
+      "title": "Related queries",
+      "id": "RELATED_QUERIES_0",
+      "request": {
+        "restriction": {
+          "geo": { "country": "US" },
+          "time": "today 12-m",
+          "complexKeywordsRestriction": { "keyword": [{ "type": "BROAD", "value": "coffee" }] }
+        },
+        "keywordType": "QUERY",
+        "metric": ["TOP", "RISING"],
+        "trendinessSettings": { "compareTime": "2023-05-28 2024-05-25" },
+        "requestOptions": { "property": "", "backend": "IZG", "category": 0 }
+      }
+    },
+    {
+      "token": "APP6_GEO_MAP_TOKEN",
+      "type": "GEO_MAP",
+      "title": "Interest by region",
+      "id": "GEO_MAP_0",
+      "request": {
+        "restriction": {
+          "geo": { "country": "US" },
+          "time": "today 12-m",
+          "complexKeywordsRestriction": { "keyword": [{ "type": "BROAD", "value": "coffee" }] }
+        },
+        "keywordType": "QUERY",
+        "metric": ["GEO_MAP_0"],
+        "requestOptions": { "property": "", "backend": "IZG", "category": 0 },
+        "userConfig": { "userType": "USER_TYPE_LEGIT_USER" }
+      }
+    }
+  ]
+}

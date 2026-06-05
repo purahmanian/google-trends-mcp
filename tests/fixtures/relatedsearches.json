@@ -1,0 +1,24 @@
+)]}'
+{
+  "default": {
+    "rankedList": [
+      {
+        "rankedKeyword": [
+          { "query": "coffee near me", "value": "100" },
+          { "query": "coffee shops", "value": "85" },
+          { "query": "best coffee", "value": "72" },
+          { "query": "iced coffee", "value": "68" },
+          { "query": "cold brew coffee", "value": "60" }
+        ]
+      },
+      {
+        "rankedKeyword": [
+          { "query": "mushroom coffee", "value": "Breakout" },
+          { "query": "coffee subscriptions", "value": "+850%" },
+          { "query": "canned coffee", "value": "+320%" },
+          { "query": "coffee alternatives", "value": "+210%" }
+        ]
+      }
+    ]
+  }
+}

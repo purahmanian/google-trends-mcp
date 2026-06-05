@@ -1,0 +1,32 @@
+)]}'
+{
+  "default": {
+    "timelineData": [
+      {
+        "time": "1685318400",
+        "formattedTime": "May 29, 2023",
+        "formattedAxisTime": "May 29",
+        "value": [72, 45],
+        "hasData": [true, true],
+        "formattedValue": ["72", "45"]
+      },
+      {
+        "time": "1685923200",
+        "formattedTime": "Jun 5, 2023",
+        "formattedAxisTime": "Jun 5",
+        "value": [68, 50],
+        "hasData": [true, true],
+        "formattedValue": ["68", "50"]
+      },
+      {
+        "time": "1686528000",
+        "formattedTime": "Jun 12, 2023",
+        "formattedAxisTime": "Jun 12",
+        "value": [75, 48],
+        "hasData": [true, true],
+        "formattedValue": ["75", "48"]
+      }
+    ],
+    "averages": [71, 47]
+  }
+}
