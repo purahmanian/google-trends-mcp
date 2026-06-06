@@ -1,8 +1,8 @@
 name: Release
 
-# Publishes to npm via OIDC trusted publishing on version tags.
-# No tokens or secrets: npmjs.com is configured to trust this exact
-# repository + workflow filename. Provenance is generated automatically.
+# On a version tag: build, test, publish to npm via OIDC trusted publishing
+# (provenance automatic), then sync server.json to the tag and publish the
+# metadata to the official MCP registry via GitHub OIDC. No tokens or secrets.
 
 on:
   push:
@@ -29,4 +29,19 @@ jobs:
 
       - run: npm test
 
-      - run: npm publish
+      - name: Publish to npm (OIDC trusted publishing)
+        run: npm publish
+
+      - name: Install mcp-publisher
+        run: |
+          curl -L "https://github.com/modelcontextprotocol/registry/releases/latest/download/mcp-publisher_$(uname -s | tr '[:upper:]' '[:lower:]')_$(uname -m | sed 's/x86_64/amd64/;s/aarch64/arm64/').tar.gz" | tar xz mcp-publisher
+
+      - name: Sync server.json version to the tag
+        run: |
+          VERSION="${GITHUB_REF_NAME#v}"
+          node -e "const fs=require('fs');const j=JSON.parse(fs.readFileSync('server.json'));j.version='$VERSION';if(j.packages&&j.packages[0])j.packages[0].version='$VERSION';fs.writeFileSync('server.json',JSON.stringify(j,null,2)+'\n')"
+
+      - name: Publish to MCP registry (GitHub OIDC)
+        run: |
+          ./mcp-publisher login github-oidc
+          ./mcp-publisher publish
